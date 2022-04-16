@@ -38,17 +38,22 @@ size_t SkipSpaces (const char* str)
 
 double GetG (formula* f)
 {
+    //printf ("call GetG\n");
     SKIPSPACES
     double val = GetE (f);
     SKIPSPACES
     if (f->str[f->p] != '$')
+    {
+        printf ("\npee pee poo poo\n");
         return SyntaxError (f);
+    }
     else
         return val;
 }
 
 double GetE (formula* f)
 {
+    //printf ("call GetE\n");
     SKIPSPACES
     double val = GetT (f);
     SKIPSPACES
@@ -70,6 +75,7 @@ double GetE (formula* f)
 
 double GetT (formula* f)
 {
+    //printf ("call GetT\n");
     SKIPSPACES
     double val = GetP0 (f);
     SKIPSPACES
@@ -91,6 +97,7 @@ double GetT (formula* f)
 
 double GetP0 (formula* f)
 {
+    //printf ("call GetP0\n");
     double val1 = GetP (f);
     SKIPSPACES
     if (f->str[f->p] != '^')
@@ -117,6 +124,7 @@ int powint (int base, int deg)
 
 double GetP (formula* f)
 {
+    //printf ("call GetP\n");
     SKIPSPACES
     if (f->str[f->p] == '(')
     {
@@ -126,29 +134,62 @@ double GetP (formula* f)
         SKIPSPACES
         if (f->str[f->p] != ')')
         {
+            //printf ("\ndick\n");
             return SyntaxError (f);
         }
         f->p++;
         SKIPSPACES
         return val;
     }
-    else
+    else if (f->str[f->p] >= '0' && f->str[f->p] <= '9')
     {
         SKIPSPACES
+        //printf ("\nhui\n");
         return GetN (f);
+    }
+    else
+    {
+        //printf ("else");
+        if (strncmp (f->str + f->p, "sin", strlen ("sin")) == 0)
+        {
+            SKIPSPACES
+            f->p += strlen ("sin");
+            return sin (GetP (f));
+        }
+        if (strncmp (f->str + f->p, "cos", strlen ("cos")) == 0)
+        {
+            SKIPSPACES
+            f->p += strlen ("cos");
+            return cos (GetP (f));
+        }
+        if (strncmp (f->str + f->p, "sqrt", strlen ("sqrt")) == 0)
+        {
+            SKIPSPACES
+            f->p += strlen ("sqrt");
+            return sqrt (GetP (f));
+        }
+        if (strncmp (f->str + f->p, "cbrt", strlen ("cbrt")) == 0)
+        {
+            SKIPSPACES
+            f->p += strlen ("cbrt");
+            return cbrt (GetP (f));
+        }
     }
 }
 
 double GetN (formula* f)
 {
+    //printf ("call GetN\n");
     SKIPSPACES
     double val = 0;
     if (sscanf (f->str + f->p, "%lf", &val) != 1)
+    {
+        //printf ("\ncock\n");
         return SyntaxError (f);
-    else
-        f->p += SkipNumber (f->str + f->p);
-        SKIPSPACES
-        return val;
+    }
+    f->p += SkipNumber (f->str + f->p);
+    SKIPSPACES
+    return val;
 }
 
 size_t SkipNumber (const char* str)
