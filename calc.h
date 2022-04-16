@@ -8,6 +8,37 @@
 
 #define SKIPSPACES f->p += SkipSpaces (f->str + f->p);
 
+enum OPER {
+    ADD = '+',
+    SUB = '-',
+    MUL = '*',
+    DIV = '/',
+    DEG = '^',
+    SIN = 's',
+    COS = 'c',
+    SQRT = 'S',
+    CBRT = 'C',
+};
+
+enum BRACE {
+    LBRAC = '(',
+    RBRAC = ')',
+};
+
+enum TYPE {
+    OPER,
+    CONST,
+};
+
+typedef struct lexem {
+    enum TYPE type;
+    union VALUE {
+        enum OPER op;
+        enum BRACE brac;
+        double coval;
+    } val;
+} lex_t;
+
 typedef struct formula {
     char*  str;
     size_t p;
@@ -27,7 +58,7 @@ double GetP0 (formula* f);
 
 double SyntaxError (formula* f);
 
-//int powint (int base, int deg);
+int powint (int base, int deg);
 
 char* Read (const char* filename, long* ptrbufsz);
 

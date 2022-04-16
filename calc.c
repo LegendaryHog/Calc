@@ -15,7 +15,7 @@ char* Read (const char* filename, long* ptrbufsz)
     fseek (text, 0, SEEK_SET);
     long start = ftell (text);
     fseek (text, 0, SEEK_END);
-    long end = ftell (text);
+    long end   = ftell (text);
     fseek (text, 0, SEEK_SET);
     bufsz = end - start;
 
