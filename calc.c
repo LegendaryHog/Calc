@@ -143,15 +143,23 @@ double GetN (formula* f)
 {
     SKIPSPACES
     double val = 0;
-    sscanf ("%lf", );
-    if (sscanf ("%lf", );)
+    if (sscanf (f->str + f->p, "%lf", &val) != 1)
         return SyntaxError (f);
     else
+        f->p += SkipNumber (f->str + f->p);
+        SKIPSPACES
         return val;
+}
+
+size_t SkipNumber (const char* str)
+{
+    size_t i = 0;
+    for (i = 0; (str[i] >= '0' && str[i] <= '9') || str[i] == '.'; i++) {;}
+    return i;
 }
 
 double SyntaxError (formula* f)
 {
-    fprdoublef (stderr, "OH SHIIIIIT SYNTAX ERROR\nstr: %s\n %*s\nposition: %zd\n", f->str, (double)f->p + 5, "^", f->p);
-    return 69;
+    fprintf (stderr, "OH SHIIIIIT SYNTAX ERROR\nstr: %s\n %*s\nposition: %zd\n", f->str, (int)f->p + 5, "^", f->p);
+    return NAN;
 }
