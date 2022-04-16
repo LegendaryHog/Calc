@@ -39,10 +39,24 @@ typedef struct lexem {
     } val;
 } lex_t;
 
+typedef struct lex_arr {
+    lex_t* lexems;
+    size_t size;
+    size_t capacity;
+} lex_arr;
+
 typedef struct formula {
     char*  str;
     size_t p;
 } formula;
+
+lex_arr* lexarrCtor (size_t startcap);
+
+int lexarrFill (lex_arr* lexarr);
+
+int lexarrResize (lex_arr* lexarr);
+
+int lexarrPush (lex_arr* lexarr, lex_t push);
 
 double GetG (formula* f);
 
