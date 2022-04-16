@@ -13,24 +13,26 @@ typedef struct formula {
     size_t p;
 } formula;
 
-int   GetG (formula* f);
+double GetG (formula* f);
 
-int   GetN (formula* f);
+double GetN (formula* f);
 
-int   GetT (formula* f);
+double GetT (formula* f);
 
-int   GetE (formula* f);
+double GetE (formula* f);
 
-int   GetP (formula* f);
+double GetP (formula* f);
 
-int   GetP0 (formula* f);
+double GetP0 (formula* f);
 
-int   SyntaxError (formula* f);
+double SyntaxError (formula* f);
 
-int powint (int base, int deg);
+//int powint (int base, int deg);
 
 char* Read (const char* filename, long* ptrbufsz);
 
 size_t SkipSpaces (const char* str);
+
+size_t SkipNumber (const char* str);
 
 #endif

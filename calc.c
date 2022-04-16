@@ -36,10 +36,10 @@ size_t SkipSpaces (const char* str)
     return i;
 }
 
-int GetG (formula* f)
+double GetG (formula* f)
 {
     SKIPSPACES
-    int val = GetE (f);
+    double val = GetE (f);
     SKIPSPACES
     if (f->str[f->p] != '$')
         return SyntaxError (f);
@@ -47,17 +47,17 @@ int GetG (formula* f)
         return val;
 }
 
-int GetE (formula* f)
+double GetE (formula* f)
 {
     SKIPSPACES
-    int val = GetT (f);
+    double val = GetT (f);
     SKIPSPACES
     while (f->str[f->p] == '+' || f->str[f->p] == '-')
     {
         char op = f->str[f->p];
         f->p++;
         SKIPSPACES
-        int val2 = GetT (f);
+        double val2 = GetT (f);
         SKIPSPACES
         if (op == '+')
             val += val2;
@@ -68,17 +68,17 @@ int GetE (formula* f)
     return val;
 }
 
-int GetT (formula* f)
+double GetT (formula* f)
 {
     SKIPSPACES
-    int val = GetP0 (f);
+    double val = GetP0 (f);
     SKIPSPACES
     while (f->str[f->p] == '*' || f->str[f->p] == '/')
     {
         char op = f->str[f->p];
         f->p++;
         SKIPSPACES
-        int val2 = GetP0 (f);
+        double val2 = GetP0 (f);
         SKIPSPACES
         if (op == '*')
             val *= val2;
@@ -89,9 +89,9 @@ int GetT (formula* f)
     return val;
 }
 
-int GetP0 (formula* f)
+double GetP0 (formula* f)
 {
-    int val1 = GetP (f);
+    double val1 = GetP (f);
     SKIPSPACES
     if (f->str[f->p] != '^')
     {
@@ -100,29 +100,29 @@ int GetP0 (formula* f)
     }
     f->p++;
     SKIPSPACES
-    int val2 = GetP0 (f);
+    double val2 = GetP0 (f);
     SKIPSPACES
-    return powint (val1, val2);
+    return pow (val1, val2);
 }
 
 int powint (int base, int deg)
 {
-    int res = 1;
-    for (int i = 0; i < deg; i++)
+    double res = 1;
+    for (double i = 0; i < deg; i++)
     {
         res *= base;
     }
     return res;
 }
 
-int GetP (formula* f)
+double GetP (formula* f)
 {
     SKIPSPACES
     if (f->str[f->p] == '(')
     {
         f->p++;
         SKIPSPACES
-        int val = GetE (f);
+        double val = GetE (f);
         SKIPSPACES
         if (f->str[f->p] != ')')
         {
@@ -139,24 +139,19 @@ int GetP (formula* f)
     }
 }
 
-int GetN (formula* f)
+double GetN (formula* f)
 {
     SKIPSPACES
-    int val = 0;
-    size_t startpos = f->p;
-    while ('0' <= f->str[f->p] && f->str[f->p] <= '9')
-    {
-        val = val * 10 + (f->str[f->p] - '0');
-        f->p++;
-    }
-    if (startpos == f->p)
+    double val = 0;
+    sscanf ("%lf", );
+    if (sscanf ("%lf", );)
         return SyntaxError (f);
     else
         return val;
 }
 
-int SyntaxError (formula* f)
+double SyntaxError (formula* f)
 {
-    fprintf (stderr, "OH SHIIIIIT SYNTAX ERROR\nstr: %s\n %*s\nposition: %zd\n", f->str, (int)f->p + 5, "^", f->p);
+    fprdoublef (stderr, "OH SHIIIIIT SYNTAX ERROR\nstr: %s\n %*s\nposition: %zd\n", f->str, (double)f->p + 5, "^", f->p);
     return 69;
 }
