@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #define SKIPSPACES f->p += SkipSpaces (f->str + f->p);
 
@@ -22,7 +23,11 @@ int   GetE (formula* f);
 
 int   GetP (formula* f);
 
+int   GetP0 (formula* f);
+
 int   SyntaxError (formula* f);
+
+int powint (int base, int deg);
 
 char* Read (const char* filename, long* ptrbufsz);
 

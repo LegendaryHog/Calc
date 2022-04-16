@@ -71,14 +71,14 @@ int GetE (formula* f)
 int GetT (formula* f)
 {
     SKIPSPACES
-    int val = GetP (f);
+    int val = GetP0 (f);
     SKIPSPACES
     while (f->str[f->p] == '*' || f->str[f->p] == '/')
     {
         char op = f->str[f->p];
         f->p++;
         SKIPSPACES
-        int val2 = GetP (f);
+        int val2 = GetP0 (f);
         SKIPSPACES
         if (op == '*')
             val *= val2;
@@ -87,6 +87,32 @@ int GetT (formula* f)
     }
     SKIPSPACES
     return val;
+}
+
+int GetP0 (formula* f)
+{
+    int val1 = GetP (f);
+    SKIPSPACES
+    if (f->str[f->p] != '^')
+    {
+        SKIPSPACES
+        return val1;
+    }
+    f->p++;
+    SKIPSPACES
+    int val2 = GetP0 (f);
+    SKIPSPACES
+    return powint (val1, val2);
+}
+
+int powint (int base, int deg)
+{
+    int res = 1;
+    for (int i = 0; i < deg; i++)
+    {
+        res *= base;
+    }
+    return res;
 }
 
 int GetP (formula* f)
