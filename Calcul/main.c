@@ -13,10 +13,10 @@ int main (void)
     Node* res = GetG (f);
     TreeDbgDump (res);
     FormulaDump (res);
-    /*if (isfinite (res))
+    if (res != NULL)
     {
-        printf ("Formula: %s\nValue: %lf\n", f->str, res);
-    }*/
+        printf ("Formula: %s\nValue: %lf\n", f->str, CalcTree (res));
+    }
     //lexarrDump (f->lexarr);
     lexarrDtor (f->lexarr);
     free (f->str);

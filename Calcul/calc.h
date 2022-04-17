@@ -11,12 +11,16 @@
 
 #define SKIPSPACES f->p += SkipSpaces (f->str + f->p);
 #define ACTLEX f->lexarr->lexs[f->p]
+#define CALC_L CalcTree (tree->left) 
+#define CALC_R CalcTree (tree->right)
 
 typedef struct formula {
     lex_arr* lexarr;
     char* str;
     size_t p;
 } formula;
+
+double CalcTree (Node* tree);
 
 Node* GetG (formula* f);
 

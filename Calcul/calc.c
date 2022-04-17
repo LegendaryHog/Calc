@@ -4,6 +4,42 @@ size_t gdcounter1 = 0;
 
 const lex_t NULLSTRUCT = {};
 
+double CalcTree (Node* tree)
+{
+    if (tree == NULL)
+    {
+        fprintf (stderr, "FATAL ERROR: tree NULL pointer\n");
+        return NAN;
+    }
+    if (tree->data.type == CONST)
+    {
+        return tree->data.val.coval;
+    }
+    switch (tree->data.val.op) {
+        case ADD:
+            return CALC_L + CALC_R;
+        case SUB:
+            return CALC_L - CALC_R;
+        case MUL:
+            return CALC_L * CALC_R;
+        case DIV:
+            return CALC_L / CALC_R;
+        case DEG:
+            return pow (CALC_L, CALC_R);
+        case SIN:
+            return sin (CALC_L);
+        case COS:
+            return cos (CALC_L);
+        case SQRT:
+            return sqrt (CALC_L);
+        case CBRT:
+            return cbrt (CALC_L);
+        default:
+            fprintf  (stderr, "FATAL ERROR: UNKNOWN TYPE OF OPERAND: %d", tree->data.val.op);
+            return NAN;
+    }
+}
+
 Node* GetG (formula* f)
 {
     //printf ("call GetG: p = %zd\n", f->p);
@@ -18,6 +54,7 @@ Node* GetG (formula* f)
     else
         return val;
 }
+
 
 Node* GetE (formula* f)
 {
