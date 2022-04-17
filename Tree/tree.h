@@ -4,21 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "../lexer/lexer.h"
 
 #define LEN0 90
 
-typedef struct lexem {
-    enum TYPE type;
-    union VALUE {
-        enum OPER op;
-        enum BRACE brac;
-        double coval;
-    } val;
-} lex_t;
-
 typedef lex_t tree_t;
-
 
 typedef struct Node {
     tree_t       data;

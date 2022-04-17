@@ -1,6 +1,6 @@
 #include "calc.h"
 
-size_t gdcounter = 0;
+size_t gdcounter1 = 0;
 
 const lex_t NULLSTRUCT = {};
 
@@ -21,62 +21,78 @@ Node* GetG (formula* f)
 
 Node* GetE (formula* f)
 {
-    Node* tree = PlantTree (NULLSTRUCT);
-    = GetT (f);
-    tree->left = GetT (f);
+    Node* tree = NULL;
+    Node* val = GetT (f);
+    Node* new = NULL;
+    tree = val;
+
     while (isadd (ACTLEX) || issub (ACTLEX))
     {
+        new = PlantTree (NULLSTRUCT);
+        new->left = tree;
         char op = ACTLEX.val.op;
         f->p++;
-        tree->right = GetT (f);
+        new->right = GetT (f);
         if (op == '+')
         {
-            tree->data.type = OPERAND;
-            tree->data.value = ADD;
+            new->data.type = OPERAND;
+            new->data.val.op = ADD;
         }
         else
         {
-            tree->data.type = OPERAND;
-            tree->data.value = SUB;
+            new->data.type = OPERAND;
+            new->data.val.op = SUB;
         }
+        tree = new;
     }
     return tree;
 }
 
 Node* GetT (formula* f)
 {
-    Node* tree = PlantTree (NULLSTRUCT);  
-    tree->left = GetP0 (f);
+    Node* tree = NULL;
+    Node* val = GetP0 (f);
+    Node* new = NULL;
+    tree = val;
+
     while (ismul (ACTLEX) || isdiv (ACTLEX))
     {
+        new = PlantTree (NULLSTRUCT);
+        new->left = tree;
         char op = ACTLEX.val.op;
         f->p++;
-        tree->right = GetP0 (f);
+        new->right = GetP0 (f);
+
         if (op == '*')
         {
-            tree->data.type = OPERAND;
-            tree->data.value = MUL;
+            new->data.type = OPERAND;
+            new->data.val.op = MUL;
         }
         else
-            tree->data.type = OPERAND;
-            tree->data.value = DIV;
+        {
+            new->data.type = OPERAND;
+            new->data.val.op = DIV;
+        }
+        tree = new;
     }
     return tree;
 }
 
 Node* GetP0 (formula* f)
 {
-    Node* PlantTree 
+    Node* tree = PlantTree (NULLSTRUCT);
     Node* val1 = GetP (f);
     if (!isdeg (ACTLEX))
     {
+        ChopDown (tree);
         return val1;
     }
     f->p++;
-    
-    Node* val2 = GetP0 (f);
-    
-    return pow (val1, val2);
+    tree->right = GetP0 (f);
+    tree->left = val1;
+    tree->data.type = OPERAND;
+    tree->data.val.op = DEG;
+    return tree;
 }
 
 int powint (int base, int deg)
@@ -99,7 +115,6 @@ Node* GetP (formula* f)
         Node* val = GetE (f);
         if (!isrbr (ACTLEX))
         {
-            ////printf ("Expected RBRAC\n");
             return SyntaxError (f);
         }
         f->p++;
@@ -107,31 +122,42 @@ Node* GetP (formula* f)
     }
     else if (isconst (ACTLEX))
     {
-        ////printf ("hui\n");
         return GetN (f);
     }
     else
     {
-        ////printf ("else");
+        Node* tree = PlantTree (NULLSTRUCT);
         if (issin (ACTLEX))
         { 
             f->p++;
-            return sin (GetP (f));
+            tree->data.type = OPERAND;
+            tree->data.val.op = SIN;
+            tree->left = GetP (f);
+            return tree;
         }
         if (iscos (ACTLEX))
         {
             f->p++;
-            return cos (GetP (f));
+            tree->data.type = OPERAND;
+            tree->data.val.op = COS;
+            tree->left = GetP (f);
+            return tree;
         }
         if (issqrt (ACTLEX))
         {
             f->p++;
-            return sqrt (GetP (f));
+            tree->data.type = OPERAND;
+            tree->data.val.op = SQRT;
+            tree->left = GetP (f);
+            return tree;
         }
         if (iscbrt (ACTLEX))
         {
             f->p++;
-            return cbrt (GetP (f));
+            tree->data.type = OPERAND;
+            tree->data.val.op = CBRT;
+            tree->left = GetP (f);
+            return tree;
         }
         return SyntaxError (f);
     }
@@ -139,16 +165,15 @@ Node* GetP (formula* f)
 
 Node* GetN (formula* f)
 {
-    //printf ("call GetN: p = %zd\n", f->p);
+    Node* tree = PlantTree (NULLSTRUCT);
     if (!isconst (ACTLEX))
     {
-        //printf ("\ncock\n");
         return SyntaxError (f);
     }
-    Node* val = ACTLEX.val.coval;
+    tree->data.type = CONST;
+    tree->data.val.coval = ACTLEX.val.coval;
     f->p++;
-    
-    return val;
+    return tree;
 }
 
 Node* SyntaxError (formula* f)
@@ -182,7 +207,7 @@ Node* SyntaxError (formula* f)
     }
     fprintf (stderr, "\n%*s\n%*s\n%*s\n\n", errstart + 1, "^", errstart + 1, "|", errstart + 1, "|");
     fprintf (stderr, "\033[0m");
-    return NAN;
+    return NULL;
 }
 
 char* Read (const char* filename, long* ptrbufsz)
@@ -216,17 +241,17 @@ char* Read (const char* filename, long* ptrbufsz)
 
 void PrintLexem (const Node* const node, FILE* f)
 {
-    fprintf (f, "\tNODE_%p[label = \"", node, node);
+    fprintf (f, "\tNODE_%p[label = \"", node);
     fprintelem (f, node->data);
-    fprintf (f, "\"];\n", node->left, node->right);
+    fprintf (f, "\"];\n");
     if (node->left)
     {
-        PrintTree (node->left, f);
+        PrintLexem (node->left, f);
         fprintf (f, "\tNODE_%p -> NODE_%p [style = bold, dir = both, arrowhead = crow, arrowtail = dot, color = chocolate4];\n", node, node->left);
     }
     if (node->right)
     {
-        PrintTree (node->right, f);
+        PrintLexem (node->right, f);
         fprintf (f, "\tNODE_%p -> NODE_%p [style = bold, dir = both, arrowhead = crow, arrowtail = dot, color = chocolate4];\n", node, node->right);
     }
 }
@@ -247,11 +272,11 @@ int FormulaDump (Node* tree)
     fprintf (graph, "}\n");
     fclose (graph);
     char* cmd_mes = (char*) calloc (LEN0, sizeof (char));
-    sprintf (cmd_mes, "dot -Tpng logs/graph_dump.dot -o logs/FormulaDump%zd.png", gdcounter);
+    sprintf (cmd_mes, "dot -Tpng logs/graph_dump.dot -o logs/FormulaDump%zd.png", gdcounter1);
     system (cmd_mes);
     free (cmd_mes);
     system ("rm logs/graph_dump.dot");
-    gdcounter++;
+    gdcounter1++;
 }
 
 int isadd (lex_t lexem)

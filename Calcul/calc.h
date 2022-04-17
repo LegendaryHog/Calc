@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 #include "../lexer/lexer.h"
 #include "../Tree/tree.h"
 
@@ -34,6 +35,8 @@ Node* SyntaxError (formula* f);
 int powint (int base, int deg);
 
 char* Read (const char* filename, long* ptrbufsz);
+
+int   FormulaDump (Node* tree);
 
 size_t SkipSpaces (const char* str);
 

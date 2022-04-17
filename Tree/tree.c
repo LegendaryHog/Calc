@@ -23,7 +23,6 @@ int ChopDown (Node* tree)
     {
         ChopDown (tree->right);
     }
-    free (tree->data);
     free (tree);
     return 0;
 }

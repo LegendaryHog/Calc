@@ -10,11 +10,13 @@ int main (void)
         return 0;
     }
     f->p = 0;
-    double res = GetG (f);
-    if (isfinite (res))
+    Node* res = GetG (f);
+    TreeDbgDump (res);
+    FormulaDump (res);
+    /*if (isfinite (res))
     {
         printf ("Formula: %s\nValue: %lf\n", f->str, res);
-    }
+    }*/
     //lexarrDump (f->lexarr);
     lexarrDtor (f->lexarr);
     free (f->str);

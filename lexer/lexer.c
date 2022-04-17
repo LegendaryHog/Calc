@@ -37,7 +37,6 @@ int lexarrPush (lex_arr* lexarr, lex_t push)
 int lexarrResize (lex_arr* lexarr)
 {
     lexarr->capacity *= 2;
-    printf ("%p\n", lexarr->lexs);
     lexarr->lexs = (lex_t*) realloc (lexarr->lexs, lexarr->capacity * sizeof (lex_t));
     if (lexarr->lexs == NULL)
     {
@@ -240,7 +239,7 @@ int fprintelem (FILE* file, lex_t lexem)
 {
     switch (lexem.type) {
             case OPERAND:
-                switch (f->lexarr->lexs[i].val.op) {
+                switch (lexem.val.op) {
                     case ADD: case SUB: case MUL: case DIV: case DEG:
                         return fprintf (file, "%c ", lexem.val.op);
                     case SIN:
@@ -254,13 +253,13 @@ int fprintelem (FILE* file, lex_t lexem)
                 }
                 break;
             case BRAC:
-                if (islbr (lexem))
+                if (lexem.type == BRAC && lexem.val.brac == LBRAC)
                     return fprintf (file, "( ");
                 else
                     return fprintf (file, ") ");
             case CONST:
                 return fprintf (file, "%lg ", lexem.val.coval);
-            default::
+            default:
                 fprintf (file, "ERROR\n");
                 return 0;
         }
