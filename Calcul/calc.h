@@ -6,6 +6,7 @@
 #include <string.h>
 #include <math.h>
 #include "../lexer/lexer.h"
+#include "../Tree/tree.h"
 
 #define SKIPSPACES f->p += SkipSpaces (f->str + f->p);
 #define ACTLEX f->lexarr->lexs[f->p]
@@ -16,19 +17,19 @@ typedef struct formula {
     size_t p;
 } formula;
 
-double GetG (formula* f);
+Node* GetG (formula* f);
 
-double GetN (formula* f);
+Node* GetN (formula* f);
 
-double GetT (formula* f);
+Node* GetT (formula* f);
 
-double GetE (formula* f);
+Node* GetE (formula* f);
 
-double GetP (formula* f);
+Node* GetP (formula* f);
 
-double GetP0 (formula* f);
+Node* GetP0 (formula* f);
 
-double SyntaxError (formula* f);
+Node* SyntaxError (formula* f);
 
 int powint (int base, int deg);
 

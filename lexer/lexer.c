@@ -236,6 +236,36 @@ int lexarrDump (lex_arr* lexarr)
     return 0;
 }
 
+int fprintelem (FILE* file, lex_t lexem)
+{
+    switch (lexem.type) {
+            case OPERAND:
+                switch (f->lexarr->lexs[i].val.op) {
+                    case ADD: case SUB: case MUL: case DIV: case DEG:
+                        return fprintf (file, "%c ", lexem.val.op);
+                    case SIN:
+                        return fprintf (file, "sin ");
+                    case COS:
+                        return fprintf (file, "cos ");
+                    case SQRT:
+                        return fprintf (file, "sqrt ");
+                    case CBRT:
+                        return fprintf (file, "cbrt ");
+                }
+                break;
+            case BRAC:
+                if (islbr (lexem))
+                    return fprintf (file, "( ");
+                else
+                    return fprintf (file, ") ");
+            case CONST:
+                return fprintf (file, "%lg ", lexem.val.coval);
+            default::
+                fprintf (file, "ERROR\n");
+                return 0;
+        }
+}
+
 
 
 

@@ -1,10 +1,14 @@
 #include "calc.h"
 
-double GetG (formula* f)
+size_t gdcounter = 0;
+
+const lex_t NULLSTRUCT = {};
+
+Node* GetG (formula* f)
 {
     //printf ("call GetG: p = %zd\n", f->p);
     
-    double val = GetE (f);
+    Node* val = GetE (f);
     
     if (!isend (ACTLEX))
     {
@@ -15,76 +19,84 @@ double GetG (formula* f)
         return val;
 }
 
-double GetE (formula* f)
+Node* GetE (formula* f)
 {
-    //printf ("call GetE: p = %zd\n", f->p);
-    double val = GetT (f);
+    Node* tree = PlantTree (NULLSTRUCT);
+    = GetT (f);
+    tree->left = GetT (f);
     while (isadd (ACTLEX) || issub (ACTLEX))
     {
         char op = ACTLEX.val.op;
         f->p++;
-        double val2 = GetT (f);
+        tree->right = GetT (f);
         if (op == '+')
-            val += val2;
+        {
+            tree->data.type = OPERAND;
+            tree->data.value = ADD;
+        }
         else
-            val -= val2;
+        {
+            tree->data.type = OPERAND;
+            tree->data.value = SUB;
+        }
     }
-    return val;
+    return tree;
 }
 
-double GetT (formula* f)
+Node* GetT (formula* f)
 {
-    //printf ("call GetT: p = %zd\n", f->p);  
-    double val = GetP0 (f);
+    Node* tree = PlantTree (NULLSTRUCT);  
+    tree->left = GetP0 (f);
     while (ismul (ACTLEX) || isdiv (ACTLEX))
     {
         char op = ACTLEX.val.op;
         f->p++;
-        
-        double val2 = GetP0 (f);
-        
+        tree->right = GetP0 (f);
         if (op == '*')
-            val *= val2;
+        {
+            tree->data.type = OPERAND;
+            tree->data.value = MUL;
+        }
         else
-            val /= val2;
+            tree->data.type = OPERAND;
+            tree->data.value = DIV;
     }
-    
-    return val;
+    return tree;
 }
 
-double GetP0 (formula* f)
+Node* GetP0 (formula* f)
 {
-    //printf ("call GetP0: p = %zd\n", f->p);
-    double val1 = GetP (f);
+    Node* PlantTree 
+    Node* val1 = GetP (f);
     if (!isdeg (ACTLEX))
     {
         return val1;
     }
     f->p++;
     
-    double val2 = GetP0 (f);
+    Node* val2 = GetP0 (f);
     
     return pow (val1, val2);
 }
 
 int powint (int base, int deg)
 {
-    double res = 1;
-    for (double i = 0; i < deg; i++)
+    int res = 1;
+    for (int i = 0; i < deg; i++)
     {
         res *= base;
     }
     return res;
 }
 
-double GetP (formula* f)
+Node* GetP (formula* f)
 {
     //printf ("call GetP: p = %zd\n", f->p);
     
     if (islbr (ACTLEX))
     {
         f->p++;
-        double val = GetE (f);
+        Node* val = GetE (f);
         if (!isrbr (ACTLEX))
         {
             ////printf ("Expected RBRAC\n");
@@ -125,7 +137,7 @@ double GetP (formula* f)
     }
 }
 
-double GetN (formula* f)
+Node* GetN (formula* f)
 {
     //printf ("call GetN: p = %zd\n", f->p);
     if (!isconst (ACTLEX))
@@ -133,13 +145,13 @@ double GetN (formula* f)
         //printf ("\ncock\n");
         return SyntaxError (f);
     }
-    double val = ACTLEX.val.coval;
+    Node* val = ACTLEX.val.coval;
     f->p++;
     
     return val;
 }
 
-double SyntaxError (formula* f)
+Node* SyntaxError (formula* f)
 {
     fprintf (stderr, "SYNTAX ERROR\n");
     fprintf (stderr, "lexem: %d %c\n", ACTLEX.type, ACTLEX.val.brac);
@@ -156,36 +168,7 @@ double SyntaxError (formula* f)
         {
             errend = strpos;
         }
-        switch (f->lexarr->lexs[i].type) {
-            case OPERAND:
-                switch (f->lexarr->lexs[i].val.op) {
-                    case ADD: case SUB: case MUL: case DIV: case DEG:
-                        strpos += fprintf (stderr, "%c ", f->lexarr->lexs[i].val.op);
-                        break;
-                    case SIN:
-                        strpos += fprintf (stderr, "sin ");
-                        break;
-                    case COS:
-                        strpos += fprintf (stderr, "cos ");
-                        break;
-                    case SQRT:
-                        strpos += fprintf (stderr, "sqrt ");
-                        break;
-                    case CBRT:
-                        strpos += fprintf (stderr, "cbrt ");
-                        break;
-                }
-                break;
-            case BRAC:
-                if (islbr (f->lexarr->lexs[i]))
-                    strpos += fprintf (stderr, "( ");
-                else
-                    strpos += fprintf (stderr, ") ");
-                break;
-            case CONST:
-                strpos += fprintf (stderr, "%lg ", f->lexarr->lexs[i].val.coval);
-                break;
-        }
+        strpos += fprintelem (stderr, f->lexarr->lexs[i]);
     }
     fputc ('\n', stderr);
     fprintf (stderr, "\033[31m");
@@ -229,6 +212,46 @@ char* Read (const char* filename, long* ptrbufsz)
     }
     fclose (text);
     return buffer;
+}
+
+void PrintLexem (const Node* const node, FILE* f)
+{
+    fprintf (f, "\tNODE_%p[label = \"", node, node);
+    fprintelem (f, node->data);
+    fprintf (f, "\"];\n", node->left, node->right);
+    if (node->left)
+    {
+        PrintTree (node->left, f);
+        fprintf (f, "\tNODE_%p -> NODE_%p [style = bold, dir = both, arrowhead = crow, arrowtail = dot, color = chocolate4];\n", node, node->left);
+    }
+    if (node->right)
+    {
+        PrintTree (node->right, f);
+        fprintf (f, "\tNODE_%p -> NODE_%p [style = bold, dir = both, arrowhead = crow, arrowtail = dot, color = chocolate4];\n", node, node->right);
+    }
+}
+
+int FormulaDump (Node* tree)
+{
+    assert (tree != NULL);
+    FILE* graph = fopen ("logs/graph_dump.dot", "w");
+    if (graph == NULL)
+    {
+        system ("mkdir logs/");
+        graph = fopen ("logs/graph_dump.dot", "w");
+    }
+    fprintf (graph, "digraph G{\n");
+    fprintf (graph, "\trankdir=TB;\n");
+    fprintf (graph, "\tnode[color = forestgreen, shape=oval, penwidth=3.0, style = filled, fillcolor = green];\n");
+    PrintLexem (tree, graph);
+    fprintf (graph, "}\n");
+    fclose (graph);
+    char* cmd_mes = (char*) calloc (LEN0, sizeof (char));
+    sprintf (cmd_mes, "dot -Tpng logs/graph_dump.dot -o logs/FormulaDump%zd.png", gdcounter);
+    system (cmd_mes);
+    free (cmd_mes);
+    system ("rm logs/graph_dump.dot");
+    gdcounter++;
 }
 
 int isadd (lex_t lexem)

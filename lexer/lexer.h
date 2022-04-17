@@ -60,5 +60,6 @@ size_t   SkipNumber (const char* str);
 
 int      lexarrDump (lex_arr* lexarr);
 
+int      fprintelem (FILE* file, lex_t lexem);
 
 #endif

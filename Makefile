@@ -2,7 +2,7 @@ all: compall run
 
 
 compall:
-	gcc lexer/lexer.c Calcul/calc.c Calcul/main.c -lm -o calc.out
+	gcc Tree/tree.c lexer/lexer.c Calcul/calc.c Calcul/main.c -lm -o calc.out
 
 run:
 	./calc.out
