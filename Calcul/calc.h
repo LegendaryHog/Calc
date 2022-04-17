@@ -35,5 +35,33 @@ char* Read (const char* filename, long* ptrbufsz);
 size_t SkipSpaces (const char* str);
 
 size_t SkipNumber (const char* str);
+// is lex funcs
+//------------------------------------------
+int isadd (lex_t lexem);
+
+int issub (lex_t lexem);
+
+int ismul (lex_t lexem);
+
+int isdiv (lex_t lexem);
+
+int isdeg (lex_t lexem);
+
+int issin (lex_t lexem);
+
+int iscos (lex_t lexem);
+
+int issqrt (lex_t lexem);
+
+int iscbrt (lex_t lexem);
+
+int islbr (lex_t lexem);
+
+int isrbr (lex_t lexem);
+
+int isconst (lex_t lexem);
+
+//------------------------------------------
+
 
 #endif

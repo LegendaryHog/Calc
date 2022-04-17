@@ -156,11 +156,11 @@ double GetN (formula* f)
     return val;
 }
 
-double SyntaxError (formula* f)
+/*double SyntaxError (formula* f)
 {
     fprintf (stderr, "OH SHIIIIIT SYNTAX ERROR\nstr: %s\n %*s\nposition: %zd\n", f->str, (int)f->p + 5, "^", f->p);
     return NAN;
-}
+}*/
 
 char* Read (const char* filename, long* ptrbufsz)
 {
@@ -190,6 +190,35 @@ char* Read (const char* filename, long* ptrbufsz)
     fclose (text);
     return buffer;
 }
+
+int isadd (lex_t lexem);
+{
+    if (lexem.type == OPERAND && lexem.val.)
+        
+}
+
+int issub (lex_t lexem);
+
+int ismul (lex_t lexem);
+
+int isdiv (lex_t lexem);
+
+int isdeg (lex_t lexem);
+
+int issin (lex_t lexem);
+
+int iscos (lex_t lexem);
+
+int issqrt (lex_t lexem);
+
+int iscbrt (lex_t lexem);
+
+int islbr (lex_t lexem);
+
+int isrbr (lex_t lexem);
+
+int isconst (lex_t lexem);
+
 
 
 
