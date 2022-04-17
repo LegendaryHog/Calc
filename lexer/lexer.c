@@ -24,7 +24,7 @@ int lexarrPush (lex_arr* lexarr, lex_t push)
 {
     if (lexarr->size == lexarr->capacity)
     {
-        if (lexarrResize (lexarr) == 1);
+        if (lexarrResize (lexarr) == 1)
         {
             fprintf (stderr, "MEMORY OFF\n");
             return 1;
@@ -37,9 +37,11 @@ int lexarrPush (lex_arr* lexarr, lex_t push)
 int lexarrResize (lex_arr* lexarr)
 {
     lexarr->capacity *= 2;
+    printf ("%p\n", lexarr->lexs);
     lexarr->lexs = (lex_t*) realloc (lexarr->lexs, lexarr->capacity * sizeof (lex_t));
-    if (!lexarr->lexs)
+    if (lexarr->lexs == NULL)
     {
+        fprintf (stderr, "MEM OFF\n");
         return 1;
     }
     for (size_t i = lexarr->capacity / 2; i < lexarr->capacity; i++)
@@ -66,7 +68,7 @@ size_t SkipSpaces (const char* str)
 int lexarrFill (lex_arr* lexarr, const char* str)
 {
     size_t p = 0;
-    while (str[p] != '\0' && str[p] != '$')
+    for (;;)
     {
         p += SkipSpaces (str + p);
         if (str[p] == '+')
@@ -75,7 +77,8 @@ int lexarrFill (lex_arr* lexarr, const char* str)
             lex.type = OPERAND;
             lex.val.op = ADD;
             p++;
-            lexarrPush (lexarr, lex);
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
         }
         else if (str[p] == '-')
         {
@@ -83,7 +86,8 @@ int lexarrFill (lex_arr* lexarr, const char* str)
             lex.type = OPERAND;
             lex.val.op = SUB;
             p++;
-            lexarrPush (lexarr, lex);
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
         }
         else if (str[p] == '*')
         {
@@ -91,7 +95,8 @@ int lexarrFill (lex_arr* lexarr, const char* str)
             lex.type = OPERAND;
             lex.val.op = MUL;
             p++;
-            lexarrPush (lexarr, lex);
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
         }
         else if (str[p] == '/')
         {
@@ -99,7 +104,8 @@ int lexarrFill (lex_arr* lexarr, const char* str)
             lex.type = OPERAND;
             lex.val.op = DIV;
             p++;
-            lexarrPush (lexarr, lex);
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
         }
         else if (str[p] == '^')
         {
@@ -107,7 +113,8 @@ int lexarrFill (lex_arr* lexarr, const char* str)
             lex.type = OPERAND;
             lex.val.op = DEG;
             p++;
-            lexarrPush (lexarr, lex);
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
         }
         else if (strncmp (str + p, "sin", strlen ("sin")) == 0)
         {
@@ -115,7 +122,8 @@ int lexarrFill (lex_arr* lexarr, const char* str)
             lex.type = OPERAND;
             lex.val.op = SIN;
             p += strlen ("sin");
-            lexarrPush (lexarr, lex);
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
         }
         else if (strncmp (str + p, "cos", strlen ("cos")) == 0)
         {
@@ -123,7 +131,8 @@ int lexarrFill (lex_arr* lexarr, const char* str)
             lex.type = OPERAND;
             lex.val.op = COS;
             p += strlen ("cos");
-            lexarrPush (lexarr, lex);
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
         }
         else if (strncmp (str + p, "sqrt", strlen ("sqrt")) == 0)
         {
@@ -131,7 +140,8 @@ int lexarrFill (lex_arr* lexarr, const char* str)
             lex.type = OPERAND;
             lex.val.op = SQRT;
             p += strlen ("sqrt");
-            lexarrPush (lexarr, lex);
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
         }
         else if (strncmp (str + p, "cbrt", strlen ("cbrt")) == 0)
         {
@@ -139,7 +149,8 @@ int lexarrFill (lex_arr* lexarr, const char* str)
             lex.type = OPERAND;
             lex.val.op = CBRT;
             p += strlen ("cbrt");
-            lexarrPush (lexarr, lex);
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
         }
         else if (str[p] == '(')
         {
@@ -147,7 +158,8 @@ int lexarrFill (lex_arr* lexarr, const char* str)
             lex.type = BRAC;
             lex.val.brac = LBRAC;
             p++;
-            lexarrPush (lexarr, lex);
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
         }
         else if (str[p] == ')')
         {
@@ -155,7 +167,8 @@ int lexarrFill (lex_arr* lexarr, const char* str)
             lex.type = BRAC;
             lex.val.brac = RBRAC;
             p++;
-            lexarrPush (lexarr, lex);
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
         }
         else if (str[p] >= '0' && str[p] <= '9')
         {
@@ -163,13 +176,24 @@ int lexarrFill (lex_arr* lexarr, const char* str)
             lex.type = CONST;
             sscanf (str + p, "%lf", &lex.val.coval);
             p += SkipNumber (str + p);
-            lexarrPush (lexarr, lex);
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
+        }
+        else if (str[p] == '\0' || str[p] == '$')
+        {
+            lex_t lex = {};
+            lex.type = END;
+            p++;
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
+            break;
         }
         else
         {
-            fprintf (stderr, "SYNTAX ERROR: UNEXPECTED SYMBOL (str[p] = %c)\nstr: %s\n%*s\n%*s\n%*s\n\n", str[p], str, (int)p + 6, "^", (int)p + 6, "|", (int)p + 6, "|");
+            fprintf (stderr, "LEXER ERROR: UNEXPECTED SYMBOL (str[p] = %c)\nstr: %s\n%*s\n%*s\n%*s\n\n", str[p], str, (int)p + 6, "^", (int)p + 6, "|", (int)p + 6, "|");
             return 1;
         }
+        p += SkipSpaces (str + p);
     }
     return 0;
 }

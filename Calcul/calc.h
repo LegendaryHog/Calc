@@ -8,9 +8,11 @@
 #include "../lexer/lexer.h"
 
 #define SKIPSPACES f->p += SkipSpaces (f->str + f->p);
+#define ACTLEX f->lexarr->lexs[f->p]
 
 typedef struct formula {
     lex_arr* lexarr;
+    char* str;
     size_t p;
 } formula;
 
@@ -60,6 +62,8 @@ int islbr (lex_t lexem);
 int isrbr (lex_t lexem);
 
 int isconst (lex_t lexem);
+
+int isend (lex_t lexem);
 
 //------------------------------------------
 

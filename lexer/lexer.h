@@ -26,6 +26,7 @@ enum TYPE {
     OPERAND = 1,
     CONST,
     BRAC,
+    END,
 };
 
 typedef struct lexem {
