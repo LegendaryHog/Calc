@@ -1,41 +1,5 @@
 #include "calc.h"
 
-char* Read (const char* filename, long* ptrbufsz)
-{
-    if (filename == NULL)
-    {
-        return NULL;
-    }
-    size_t bufsz = 0;
-    FILE* text = fopen (filename, "r");
-    if (text == NULL)
-    {
-        return NULL;
-    }
-    fseek (text, 0, SEEK_SET);
-    long start = ftell (text);
-    fseek (text, 0, SEEK_END);
-    long end   = ftell (text);
-    fseek (text, 0, SEEK_SET);
-    bufsz = end - start;
-
-    char* buffer = (char*) calloc (bufsz + 1, sizeof (char));
-    fread (buffer, sizeof (char), bufsz, text);
-    if (ptrbufsz != NULL)
-    {
-        *ptrbufsz == bufsz;
-    }
-    fclose (text);
-    return buffer;
-}
-
-size_t SkipSpaces (const char* str)
-{
-    size_t i = 0;
-    for (i = 0; str[i] == ' ' || str[i] == '\t'; i++) {;}
-    return i;
-}
-
 double GetG (formula* f)
 {
     //printf ("call GetG\n");
@@ -192,15 +156,40 @@ double GetN (formula* f)
     return val;
 }
 
-size_t SkipNumber (const char* str)
-{
-    size_t i = 0;
-    for (i = 0; (str[i] >= '0' && str[i] <= '9') || str[i] == '.'; i++) {;}
-    return i;
-}
-
 double SyntaxError (formula* f)
 {
     fprintf (stderr, "OH SHIIIIIT SYNTAX ERROR\nstr: %s\n %*s\nposition: %zd\n", f->str, (int)f->p + 5, "^", f->p);
     return NAN;
 }
+
+char* Read (const char* filename, long* ptrbufsz)
+{
+    if (filename == NULL)
+    {
+        return NULL;
+    }
+    size_t bufsz = 0;
+    FILE* text = fopen (filename, "r");
+    if (text == NULL)
+    {
+        return NULL;
+    }
+    fseek (text, 0, SEEK_SET);
+    long start = ftell (text);
+    fseek (text, 0, SEEK_END);
+    long end   = ftell (text);
+    fseek (text, 0, SEEK_SET);
+    bufsz = end - start;
+
+    char* buffer = (char*) calloc (bufsz + 1, sizeof (char));
+    fread (buffer, sizeof (char), bufsz, text);
+    if (ptrbufsz != NULL)
+    {
+        *ptrbufsz == bufsz;
+    }
+    fclose (text);
+    return buffer;
+}
+
+
+
