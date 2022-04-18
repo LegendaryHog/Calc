@@ -227,7 +227,7 @@ int lexarrFill (lex_arr* lexarr, const char* str)
         {
             lex_t lex = {};
             lex.type = VAR;
-            sscnaf (str + p, "%8[^ /*+-^)$]", lex.val.var.name);
+            sscanf (str + p, "%8[^ /*+-^)$]", lex.val.var.name);
             p += SkipVar (str + p);
             if (lexarrPush (lexarr, lex) == 1)
                 return 1;
@@ -316,6 +316,8 @@ int fprintelem (FILE* file, lex_t lexem)
                 return fprintf (file, "%lg ", lexem.val.num);
             case END:
                 return 0;
+            case VAR:
+                return fprintf (file, "%s ", lexem.val.var.name);
             default:
                 fprintf (file, "ERROR\n");
                 return 0;
@@ -405,7 +407,7 @@ int lexnum_e (const char* str)
 size_t SkipVar (const char* str)
 {
     size_t i = 0;
-    for (i = 0; str[i] != ' ' && str[i] != '+' && str[i] != '-' && str[i] != '*' && str[i] != '/' && str[i] != '^' && str[i] != '$' && str[i] != ')' && str[i] != '\0' && str[i] != '=') {;}
+    for (i = 0; str[i] != ' ' && str[i] != '+' && str[i] != '-' && str[i] != '*' && str[i] != '/' && str[i] != '^' && str[i] != '$' && str[i] != ')' && str[i] != '\0' && str[i] != '='; i++) {;}
     return 1;
 }
 

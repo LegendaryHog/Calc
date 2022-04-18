@@ -8,11 +8,11 @@ const double _PHI_   = 1.618033989;
 
 const lex_t NULLSTRUCT = {};
 
-int SubstitAndCalc (Node* tree, const char* substit)
+double SubstitAndCalc (Node* tree, const char* substit)
 {
     if (Subtit (tree, substit) == 1)
     {
-        fpintf (stderr, "ERROR: bad subtit\n");
+        fprintf (stderr, "ERROR: bad subtit\n");
         return 1;
     }
     return CalcTree (tree);
@@ -22,39 +22,79 @@ int Subtit (Node* tree, const char* subtit)
 {
     vararr* varr = vararrCtor (1);
     size_t p = 0;
-    while (substit[p] != '\0' && substit[p] != '\n' && substit[p] != '\r')
+    while (subtit[p] != '\0' && subtit[p] != '\n' && subtit[p] != '\r')
     {
-        if (varr->size != 0 && substit[p] != ',')
+        if (varr->size != 0 && subtit[p] != ',')
         {
-            fprintf (stderr, "Not found ',' after %zd variable", varr->size - 1)
+            fprintf (stderr, "Not found ',' after %zd variable", varr->size - 1);
             return 1;
         }
+        else if (varr->size != 0)
+        {
+            p++;
+        }
         struct VARIABLE var = {};
-        p += SkipSpaces (substit + p);
-        if (sscanf (substit + p, "%[^ =]", var.name) != 1)
+        p += SkipSpaces (subtit + p);
+        if (sscanf (subtit + p, "%[^ =]", var.name) != 1)
         {
             fprintf (stderr, "Can't scan %zd variable name\n", varr->size);
             return 1;
         }
-        p += SkipVar (substit + p);
-        if (substit[p] != '=')
+        p += SkipVar (subtit + p);
+        p += SkipSpaces (subtit + p);
+        if (subtit[p] != '=')
         {
             fprintf (stderr, "Not found '=' after %zd variable name\n", varr->size);
             return 1;
         }
-        p += SkipSpaces (substit + p);
-        if (sscanf (substit + p, "%lf", var.value) != 1)
+        p++;
+        p += SkipSpaces (subtit + p);
+        if (sscanf (subtit + p, "%lf", &var.value) != 1)
         {
             fprintf (stderr, "Can't scan value of %zd variable", varr->size);
             return 1;
         }
-        p += SkipNumber (substit + p);
-        p += SkipSpaces (substit + p);
+        p += SkipNumber (subtit + p);
+        p += SkipSpaces (subtit + p);
         vararrPush (varr, var);
     }
     int err = RecSubtit (tree, varr); 
     vararrDtor (varr);
     return err;
+}
+
+int RecSubtit (Node* node, vararr* varr)
+{
+    if (node->data.type == VAR)
+    {
+        size_t i = 0;
+        for (i = 0; i < varr->size; i++)
+        {
+            if (strcmp (node->data.val.var.name, varr->arr[i].name) == 0)
+            {
+                node->data.val.var.value = varr->arr[i].value;
+                break;
+            }
+        }
+        if (i == varr->size)
+        {
+            fprintf (stderr, "ERROR: not found variable %s", node->data.val.var.name);
+            return 1;
+        }
+    }
+    int err = 0;
+    if (node->left)
+    {
+        err += RecSubtit (node->left, varr);
+    }
+    if (node->right)
+    {
+        err += RecSubtit (node->right, varr);
+    }
+    if (err > 0)
+        return 1;
+    else
+        return 0;
 }
 
 vararr* vararrCtor (size_t startcap)
@@ -77,13 +117,13 @@ int vararrDtor (vararr* varr)
     return 0;
 }
 
-int vararrrResize (vararr* varr)
+int vararrResize (vararr* varr)
 {
     varr->capacity *= 2;
     varr->arr = (struct VARIABLE*) realloc (varr->arr, varr->capacity * sizeof (struct VARIABLE));
     for (size_t i = varr->capacity/2; i < varr->capacity; i++)
     {
-        varr->arr[i] = {};
+        varr->arr[i].value = NAN;
     }
     return 0;
 }
@@ -115,6 +155,8 @@ double CalcTree (Node* tree)
         return _NUM_E_;
     else if (isphi (tree->data))
         return _PHI_;
+    else if (isvar (tree->data))
+        return tree->data.val.var.value;
     else {
         switch (tree->data.val.op) {
             case ADD:
@@ -138,7 +180,7 @@ double CalcTree (Node* tree)
             case LN:
                 return log (CALC_L);
             default:
-                fprintf  (stderr, "FATAL ERROR: UNKNOWN TYPE OF OPER: %d", tree->data.val.op);
+                fprintf  (stderr, "FATAL ERROR: UNKNOWN TYPE OF OPER: %d\n", tree->data.val.op);
                 return NAN;
         }
     }
@@ -261,7 +303,7 @@ Node* GetP (formula* f)
         f->p++;
         return val;
     }
-    else if (isconst (ACTLEX) || isnum (ACTLEX))
+    else if (isconst (ACTLEX) || isnum (ACTLEX) || isvar (ACTLEX))
     {
         return GetN (f);
     }
@@ -316,7 +358,7 @@ Node* GetP (formula* f)
 Node* GetN (formula* f)
 {
     Node* tree = PlantTree (NULLSTRUCT);
-    if (!isnum (ACTLEX) && !isconst (ACTLEX))
+    if (!isnum (ACTLEX) && !isconst (ACTLEX) && !isvar (ACTLEX))
     {
         fprintf (stderr, "SYNTAXERROR FROM GetN ()\n");
         return SyntaxError (f);
@@ -326,10 +368,16 @@ Node* GetN (formula* f)
         tree->data.type = CONST;
         tree->data.val.con = ACTLEX.val.con;
     }
-    else
+    else if (isnum (ACTLEX))
     {
         tree->data.type = NUM;
         tree->data.val.num = ACTLEX.val.num;
+    }
+    else
+    {
+        tree->data.type = VAR;
+        tree->data.val.var.value = NAN;
+        strcpy (tree->data.val.var.name, ACTLEX.val.var.name);
     }
     f->p++;
     return tree;
@@ -578,6 +626,14 @@ int isend (lex_t lexem)
         return 1;
     else
         return 0; 
+}
+
+int isvar (lex_t lexem)
+{
+    if (lexem.type == VAR)
+        return 1;
+    else
+        return 0;
 }
 
 

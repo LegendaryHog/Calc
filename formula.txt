@@ -1,1 +1,1 @@
-lne + sin(pi/2) + e^ln2 - cos0 + sqrt4 ^ (3 * phi)
+pi + x + 2 * y

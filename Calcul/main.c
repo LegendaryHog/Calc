@@ -15,7 +15,7 @@ int main (void)
     FormulaDump (res);
     if (res != NULL)
     {
-        printf ("Formula: %s\nValue: %lg\n", f->str, CalcTree (res));
+        printf ("Formula: %s\nValue: %lg\n", f->str, SubstitAndCalc (res, "x = 5, y = 2"));
     }
     //lexarrDump (f->lexarr);
     lexarrDtor (f->lexarr);

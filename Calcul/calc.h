@@ -26,7 +26,7 @@ typedef struct VARARR {
     size_t capacity;
 } vararr;
 
-int    SubstitAndCalc (Node* tree, const char* substit);
+double SubstitAndCalc (Node* tree, const char* substit);
 
 int    Subtit (Node* tree, const char* subtit);
 
@@ -36,7 +36,7 @@ vararr* vararrCtor (size_t startcap);
 
 int     vararrDtor (vararr* varr);
 
-int     vararrrResize (vararr* varr);
+int     vararrResize (vararr* varr);
 
 int     vararrPush (vararr* varr, struct VARIABLE push);
 
@@ -102,6 +102,8 @@ int isnum_e (lex_t lexem);
 int isconst (lex_t lexem);
 
 int isend (lex_t lexem);
+
+int isvar (lex_t lexem);
 
 //------------------------------------------
 
