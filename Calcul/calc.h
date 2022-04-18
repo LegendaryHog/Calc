@@ -20,6 +20,26 @@ typedef struct formula {
     size_t p;
 } formula;
 
+typedef struct VARARR {
+    struct VARIABLE* arr;
+    size_t size;
+    size_t capacity;
+} vararr;
+
+int    SubstitAndCalc (Node* tree, const char* substit);
+
+int    Subtit (Node* tree, const char* subtit);
+
+int    RecSubtit (Node* node, vararr* varr);
+
+vararr* vararrCtor (size_t startcap);
+
+int     vararrDtor (vararr* varr);
+
+int     vararrrResize (vararr* varr);
+
+int     vararrPush (vararr* varr, struct VARIABLE push);
+
 double CalcTree (Node* tree);
 
 Node* GetG (formula* f);

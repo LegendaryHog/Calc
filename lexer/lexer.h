@@ -50,14 +50,9 @@ enum CONSTANT {
 };
 
 struct VARIABLE {
-    size_t  index;
     char name[VARLEN];
+    double value;
 };
-
-typedef struct VARS {
-    struct VARIABLE vars[VARSNUM];
-    size_t pos;
-} vararr;
 typedef struct lexem {
     enum TYPE type;
     union VALUE {
@@ -88,6 +83,8 @@ int      lexarrDtor (lex_arr* lexarr);
 size_t   SkipSpaces (const char* str);
 
 size_t   SkipNumber (const char* str);
+
+size_t   SkipVar    (const char* str);
 
 int      lexarrDump (lex_arr* lexarr);
 

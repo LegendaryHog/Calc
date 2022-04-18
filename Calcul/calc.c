@@ -8,6 +8,98 @@ const double _PHI_   = 1.618033989;
 
 const lex_t NULLSTRUCT = {};
 
+int SubstitAndCalc (Node* tree, const char* substit)
+{
+    if (Subtit (tree, substit) == 1)
+    {
+        fpintf (stderr, "ERROR: bad subtit\n");
+        return 1;
+    }
+    return CalcTree (tree);
+}
+
+int Subtit (Node* tree, const char* subtit)
+{
+    vararr* varr = vararrCtor (1);
+    size_t p = 0;
+    while (substit[p] != '\0' && substit[p] != '\n' && substit[p] != '\r')
+    {
+        if (varr->size != 0 && substit[p] != ',')
+        {
+            fprintf (stderr, "Not found ',' after %zd variable", varr->size - 1)
+            return 1;
+        }
+        struct VARIABLE var = {};
+        p += SkipSpaces (substit + p);
+        if (sscanf (substit + p, "%[^ =]", var.name) != 1)
+        {
+            fprintf (stderr, "Can't scan %zd variable name\n", varr->size);
+            return 1;
+        }
+        p += SkipVar (substit + p);
+        if (substit[p] != '=')
+        {
+            fprintf (stderr, "Not found '=' after %zd variable name\n", varr->size);
+            return 1;
+        }
+        p += SkipSpaces (substit + p);
+        if (sscanf (substit + p, "%lf", var.value) != 1)
+        {
+            fprintf (stderr, "Can't scan value of %zd variable", varr->size);
+            return 1;
+        }
+        p += SkipNumber (substit + p);
+        p += SkipSpaces (substit + p);
+        vararrPush (varr, var);
+    }
+    int err = RecSubtit (tree, varr); 
+    vararrDtor (varr);
+    return err;
+}
+
+vararr* vararrCtor (size_t startcap)
+{
+    vararr* varr = (vararr*) calloc (1, sizeof (vararr));
+    varr->arr = (struct VARIABLE*) calloc (startcap, sizeof (struct VARIABLE));
+    varr->capacity = startcap;
+    varr->size = 0;
+    return varr; 
+}
+
+int vararrDtor (vararr* varr)
+{
+    if (!varr)
+    {
+        return 1;
+    }
+    free (varr->arr);
+    free (varr);
+    return 0;
+}
+
+int vararrrResize (vararr* varr)
+{
+    varr->capacity *= 2;
+    varr->arr = (struct VARIABLE*) realloc (varr->arr, varr->capacity * sizeof (struct VARIABLE));
+    for (size_t i = varr->capacity/2; i < varr->capacity; i++)
+    {
+        varr->arr[i] = {};
+    }
+    return 0;
+}
+
+int vararrPush (vararr* varr, struct VARIABLE push)
+{
+    if (varr->size == varr->capacity)
+    {
+        vararrResize (varr);
+    }
+    strcpy (varr->arr[varr->size].name, push.name);
+    varr->arr[varr->size].value = push.value;
+    varr->size++;
+    return 0;
+}
+
 double CalcTree (Node* tree)
 {
     if (tree == NULL)

@@ -225,8 +225,12 @@ int lexarrFill (lex_arr* lexarr, const char* str)
         }
         else
         {
-            fprintf (stderr, "LEXER ERROR: UNEXPECTED SYMBOL (str[p] = %c)\nstr: %s\n%*s\n%*s\n%*s\n\n", str[p], str, (int)p + 6, "^", (int)p + 6, "|", (int)p + 6, "|");
-            return 1;
+            lex_t lex = {};
+            lex.type = VAR;
+            sscnaf (str + p, "%8[^ /*+-^)$]", lex.val.var.name);
+            p += SkipVar (str + p);
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
         }
         p += SkipSpaces (str + p);
     }
@@ -371,7 +375,7 @@ int lexln (const char* str)
 int lexpi (const char* str)
 {
     char lexstr[3] = {};
-    sscanf (str, "%[^)^$+-*/]", lexstr);
+    sscanf (str, "%[^ )^$+-*/]", lexstr);
     if (strcmp (lexstr, "pi") == 0)
         return 1;
     else
@@ -381,7 +385,7 @@ int lexpi (const char* str)
 int lexphi (const char* str)
 {
     char lexstr[4] = {};
-    sscanf (str, "%[^)^$+-*/]", lexstr);
+    sscanf (str, "%[^ )^$+-*/]", lexstr);
     if (strcmp (lexstr, "phi") == 0)
         return 1;
     else
@@ -397,6 +401,14 @@ int lexnum_e (const char* str)
     else
         return 0;
 }
+
+size_t SkipVar (const char* str)
+{
+    size_t i = 0;
+    for (i = 0; str[i] != ' ' && str[i] != '+' && str[i] != '-' && str[i] != '*' && str[i] != '/' && str[i] != '^' && str[i] != '$' && str[i] != ')' && str[i] != '\0' && str[i] != '=') {;}
+    return 1;
+}
+
 
 
 
