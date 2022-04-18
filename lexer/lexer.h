@@ -70,4 +70,21 @@ int      lexarrDump (lex_arr* lexarr);
 
 int      fprintelem (FILE* file, lex_t lexem);
 
+int lexsin (const char* str);
+
+int lexcos (const char* str);
+
+int lexsqrt (const char* str);
+
+int lexcbrt (const char* str);
+
+int lexln (const char* str);
+
+int lexpi (const char* str);
+
+int lexphi (const char* str);
+
+int lexnum_e (const char* str);
+
+
 #endif

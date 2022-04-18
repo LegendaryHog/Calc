@@ -151,87 +151,82 @@ int lexarrFill (lex_arr* lexarr, const char* str)
                 return 1;
             break;
         }
-        else
-        { 
-            char lexstr[10] = {};
-            sscanf (str + p, "%[^+-*/^ $()]", lexstr);
-            if (strcmp (lexstr, "sin") == 0)
-            {
-                lex_t lex = {};
-                lex.type = OPERAND;
-                lex.val.op = SIN;
-                p += strlen ("sin");
-                if (lexarrPush (lexarr, lex) == 1)
-                    return 1;
-            }
-            else if (strcmp (lexstr, "cos") == 0)
-            {
-                lex_t lex = {};
-                lex.type = OPERAND;
-                lex.val.op = COS;
-                p += strlen ("cos");
-                if (lexarrPush (lexarr, lex) == 1)
-                    return 1;
-            }
-            else if (strcmp (lexstr, "sqrt") == 0)
-            {
-                lex_t lex = {};
-                lex.type = OPERAND;
-                lex.val.op = SQRT;
-                p += strlen ("sqrt");
-                if (lexarrPush (lexarr, lex) == 1)
-                    return 1;
-            }
-            else if (strcmp (lexstr, "cbrt") == 0)
-            {
-                lex_t lex = {};
-                lex.type = OPERAND;
-                lex.val.op = CBRT;
-                p += strlen ("cbrt");
-                if (lexarrPush (lexarr, lex) == 1)
-                    return 1;
-            }
-            else if (strcmp (lexstr, "ln") == 0)
-            {
-                lex_t lex = {};
-                lex.type = OPERAND;
-                lex.val.op = LN;
-                p += strlen ("ln");
-                if (lexarrPush (lexarr, lex) == 1)
-                    return 1;
-            }
-            else if (strcmp (lexstr, "pi") == 0)
-            {
-                lex_t lex = {};
-                lex.type = CONST;
-                lex.val.con = PI;
-                p += strlen ("pi");
-                if (lexarrPush (lexarr, lex) == 1)
-                    return 1;
-            }
-            else if (strcmp (lexstr, "phi") == 0)
-            {
-                lex_t lex = {};
-                lex.type = CONST;
-                lex.val.con = PHI;
-                p += strlen ("phi");
-                if (lexarrPush (lexarr, lex) == 1)
-                    return 1;
-            }
-            else if (strcmp (lexstr, "e") == 0)
-            {
-                lex_t lex = {};
-                lex.type = CONST;
-                lex.val.con = PI;
-                p += strlen ("e");
-                if (lexarrPush (lexarr, lex) == 1)
-                    return 1;
-            }
-            else
-            {
-                fprintf (stderr, "LEXER ERROR: UNEXPECTED SYMBOL (str[p] = %c)\nstr: %s\n%*s\n%*s\n%*s\n\n", str[p], str, (int)p + 6, "^", (int)p + 6, "|", (int)p + 6, "|");
+        else if (lexsin (str + p))
+        {
+            lex_t lex = {};
+            lex.type = OPERAND;
+            lex.val.op = SIN;
+            p += strlen ("sin");
+            if (lexarrPush (lexarr, lex) == 1)
                 return 1;
-            }
+        }
+        else if (lexcos (str + p))
+        {
+            lex_t lex = {};
+            lex.type = OPERAND;
+            lex.val.op = COS;
+            p += strlen ("cos");
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
+        }
+        else if (lexsqrt (str + p))
+        {
+            lex_t lex = {};
+            lex.type = OPERAND;
+            lex.val.op = SQRT;
+            p += strlen ("sqrt");
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
+        }
+        else if (lexcbrt (str + p))
+        {
+            lex_t lex = {};
+            lex.type = OPERAND;
+            lex.val.op = CBRT;
+            p += strlen ("cbrt");
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
+        }
+        else if (lexln (str + p))
+        {
+            lex_t lex = {};
+            lex.type = OPERAND;
+            lex.val.op = LN;
+            p += strlen ("ln");
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
+        }
+        else if (lexpi (str + p))
+        {
+            lex_t lex = {};
+            lex.type = CONST;
+            lex.val.con = PI;
+            p += strlen ("pi");
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
+        }
+        else if (lexphi (str + p))
+        {
+            lex_t lex = {};
+            lex.type = CONST;
+            lex.val.con = PHI;
+            p += strlen ("phi");
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
+        }
+        else if (lexnum_e (str + p))
+        {
+            lex_t lex = {};
+            lex.type = CONST;
+            lex.val.con = NUM_E;
+            p += strlen ("e");
+            if (lexarrPush (lexarr, lex) == 1)
+                return 1;
+        }
+        else
+        {
+            fprintf (stderr, "LEXER ERROR: UNEXPECTED SYMBOL (str[p] = %c)\nstr: %s\n%*s\n%*s\n%*s\n\n", str[p], str, (int)p + 6, "^", (int)p + 6, "|", (int)p + 6, "|");
+            return 1;
         }
         p += SkipSpaces (str + p);
     }
@@ -322,6 +317,87 @@ int fprintelem (FILE* file, lex_t lexem)
                 return 0;
     }
 }
+
+int lexsin (const char* str)
+{
+    char lexstr[4] = {};
+    sscanf (str, "%3s", lexstr);
+    if (strcmp (lexstr, "sin") == 0)
+        return 1;
+    else
+        return 0;
+}
+
+int lexcos (const char* str)
+{
+    char lexstr[4] = {};
+    sscanf (str, "%3s", lexstr);
+    if (strcmp (lexstr, "cos") == 0)
+        return 1;
+    else
+        return 0;
+}
+
+int lexsqrt (const char* str)
+{
+    char lexstr[5] = {};
+    sscanf (str, "%4s", lexstr);
+    if (strcmp (lexstr, "sqrt") == 0)
+        return 1;
+    else
+        return 0;
+}
+
+int lexcbrt (const char* str)
+{
+    char lexstr[5] = {};
+    sscanf (str, "%4s", lexstr);
+    if (strcmp (lexstr, "cbrt") == 0)
+        return 1;
+    else
+        return 0;
+}
+
+int lexln (const char* str)
+{
+    char lexstr[3] = {};
+    sscanf (str, "%2s", lexstr);
+    if (strcmp (lexstr, "ln") == 0)
+        return 1;
+    else
+        return 0;
+}
+
+int lexpi (const char* str)
+{
+    char lexstr[3] = {};
+    sscanf (str, "%[^)^$+-*/]", lexstr);
+    if (strcmp (lexstr, "pi") == 0)
+        return 1;
+    else
+        return 0;
+}
+
+int lexphi (const char* str)
+{
+    char lexstr[4] = {};
+    sscanf (str, "%[^)^$+-*/]", lexstr);
+    if (strcmp (lexstr, "phi") == 0)
+        return 1;
+    else
+        return 0;
+}
+
+int lexnum_e (const char* str)
+{
+    char lexstr[2] = {};
+    sscanf (str, "%[^)^$+-*/]", lexstr);
+    if (strcmp (lexstr, "e") == 0)
+        return 1;
+    else
+        return 0;
+}
+
 
 
 
