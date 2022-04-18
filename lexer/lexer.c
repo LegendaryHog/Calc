@@ -115,42 +115,6 @@ int lexarrFill (lex_arr* lexarr, const char* str)
             if (lexarrPush (lexarr, lex) == 1)
                 return 1;
         }
-        else if (strncmp (str + p, "sin", strlen ("sin")) == 0)
-        {
-            lex_t lex = {};
-            lex.type = OPERAND;
-            lex.val.op = SIN;
-            p += strlen ("sin");
-            if (lexarrPush (lexarr, lex) == 1)
-                return 1;
-        }
-        else if (strncmp (str + p, "cos", strlen ("cos")) == 0)
-        {
-            lex_t lex = {};
-            lex.type = OPERAND;
-            lex.val.op = COS;
-            p += strlen ("cos");
-            if (lexarrPush (lexarr, lex) == 1)
-                return 1;
-        }
-        else if (strncmp (str + p, "sqrt", strlen ("sqrt")) == 0)
-        {
-            lex_t lex = {};
-            lex.type = OPERAND;
-            lex.val.op = SQRT;
-            p += strlen ("sqrt");
-            if (lexarrPush (lexarr, lex) == 1)
-                return 1;
-        }
-        else if (strncmp (str + p, "cbrt", strlen ("cbrt")) == 0)
-        {
-            lex_t lex = {};
-            lex.type = OPERAND;
-            lex.val.op = CBRT;
-            p += strlen ("cbrt");
-            if (lexarrPush (lexarr, lex) == 1)
-                return 1;
-        }
         else if (str[p] == '(')
         {
             lex_t lex = {};
@@ -188,9 +152,77 @@ int lexarrFill (lex_arr* lexarr, const char* str)
             break;
         }
         else
-        {
-            fprintf (stderr, "LEXER ERROR: UNEXPECTED SYMBOL (str[p] = %c)\nstr: %s\n%*s\n%*s\n%*s\n\n", str[p], str, (int)p + 6, "^", (int)p + 6, "|", (int)p + 6, "|");
-            return 1;
+        { 
+            char lexstr[10] = {};
+            sscanf (str + p, "%[^+-*/^ \0$()]", lexstr);
+            if (strcmp (lexstr, "sin") == 0)
+            {
+                lex_t lex = {};
+                lex.type = OPERAND;
+                lex.val.op = SIN;
+                p += strlen ("sin");
+                if (lexarrPush (lexarr, lex) == 1)
+                    return 1;
+            }
+            else if (strcmp (lexstr, "cos") == 0)
+            {
+                lex_t lex = {};
+                lex.type = OPERAND;
+                lex.val.op = COS;
+                p += strlen ("cos");
+                if (lexarrPush (lexarr, lex) == 1)
+                    return 1;
+            }
+            else if (strcmp (lexstr, "sqrt") == 0)
+            {
+                lex_t lex = {};
+                lex.type = OPERAND;
+                lex.val.op = SQRT;
+                p += strlen ("sqrt");
+                if (lexarrPush (lexarr, lex) == 1)
+                    return 1;
+            }
+            else if (strcmp (lexstr, "cbrt") == 0)
+            {
+                lex_t lex = {};
+                lex.type = OPERAND;
+                lex.val.op = CBRT;
+                p += strlen ("cbrt");
+                if (lexarrPush (lexarr, lex) == 1)
+                    return 1;
+            }
+            else if (strncmp (str + p, "pi", strlen ("pi")) == 0)
+            {
+                lex_t lex = {};
+                lex.type = CONST;
+                lex.val.con = PI;
+                p += strlen ("pi");
+                if (lexarrPush (lexarr, lex) == 1)
+                    return 1;
+            }
+            else if (strncmp (str + p, "phi", strlen ("phi")) == 0)
+            {
+                lex_t lex = {};
+                lex.type = CONST;
+                lex.val.con = PHI;
+                p += strlen ("phi");
+                if (lexarrPush (lexarr, lex) == 1)
+                    return 1;
+            }
+            else if (strncmp (str + p, "e", strlen ("e")) == 0)
+            {
+                lex_t lex = {};
+                lex.type = CONST;
+                lex.val.con = PI;
+                p += strlen ("e");
+                if (lexarrPush (lexarr, lex) == 1)
+                    return 1;
+            }
+            else
+            {
+                fprintf (stderr, "LEXER ERROR: UNEXPECTED SYMBOL (str[p] = %c)\nstr: %s\n%*s\n%*s\n%*s\n\n", str[p], str, (int)p + 6, "^", (int)p + 6, "|", (int)p + 6, "|");
+                return 1;
+            }
         }
         p += SkipSpaces (str + p);
     }

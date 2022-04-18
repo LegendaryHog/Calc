@@ -24,17 +24,24 @@ enum BRACE {
 
 enum TYPE {
     OPERAND = 1,
-    CONST,
+    NUM,
     BRAC,
+    CONST,
     END,
 };
 
+enum CONSTANT {
+    PI,
+    PHI,
+    NUM_E,
+};
 typedef struct lexem {
     enum TYPE type;
     union VALUE {
         enum OPER op;
         enum BRACE brac;
-        double coval;
+        enum CONSTANT con;
+        double num;
     } val;
 } lex_t;
 

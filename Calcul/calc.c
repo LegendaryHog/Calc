@@ -404,9 +404,33 @@ int isrbr (lex_t lexem)
         return 0;
 }
 
-int isconst (lex_t lexem)
+int isnum (lex_t lexem)
 {
-    if (lexem.type == CONST)
+    if (lexem.type == NUM)
+        return 1;
+    else
+        return 0;
+}
+
+int ispi (lex_t lexem)
+{
+    if (lexem.type == CONST && lexem.val.con == PI)
+        return 1;
+    else
+        return 0;
+}
+
+int isphi (lex_t lexem)
+{
+    if (lexem.type == CONST && lexem.val.con == PHI)
+        return 1;
+    else
+        return 0;
+}
+
+int isnum_e (lex_t lexem)
+{
+    if (lexem.type == CONST && lexem.val.con == NUM_E;
         return 1;
     else
         return 0;
