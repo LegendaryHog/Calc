@@ -320,7 +320,7 @@ int fprintelem (FILE* file, lex_t lexem)
 
 int lexsin (const char* str)
 {
-    char lexstr[4] = {};
+    char lexstr[LEN_SIN + 1] = {};
     sscanf (str, "%3s", lexstr);
     if (strcmp (lexstr, "sin") == 0)
         return 1;
@@ -330,7 +330,7 @@ int lexsin (const char* str)
 
 int lexcos (const char* str)
 {
-    char lexstr[4] = {};
+    char lexstr[LEN_COS + 1] = {};
     sscanf (str, "%3s", lexstr);
     if (strcmp (lexstr, "cos") == 0)
         return 1;
@@ -340,7 +340,7 @@ int lexcos (const char* str)
 
 int lexsqrt (const char* str)
 {
-    char lexstr[5] = {};
+    char lexstr[LEN_SQRT + 1] = {};
     sscanf (str, "%4s", lexstr);
     if (strcmp (lexstr, "sqrt") == 0)
         return 1;
@@ -350,7 +350,7 @@ int lexsqrt (const char* str)
 
 int lexcbrt (const char* str)
 {
-    char lexstr[5] = {};
+    char lexstr[LEN_CBRT + 1] = {};
     sscanf (str, "%4s", lexstr);
     if (strcmp (lexstr, "cbrt") == 0)
         return 1;
@@ -360,7 +360,7 @@ int lexcbrt (const char* str)
 
 int lexln (const char* str)
 {
-    char lexstr[3] = {};
+    char lexstr[LN_LEN + 1] = {};
     sscanf (str, "%2s", lexstr);
     if (strcmp (lexstr, "ln") == 0)
         return 1;
@@ -370,7 +370,7 @@ int lexln (const char* str)
 
 int lexpi (const char* str)
 {
-    char lexstr[3] = {};
+    char lexstr[PI_LEN + 1] = {};
     sscanf (str, "%[^)^$+-*/]", lexstr);
     if (strcmp (lexstr, "pi") == 0)
         return 1;
@@ -380,7 +380,7 @@ int lexpi (const char* str)
 
 int lexphi (const char* str)
 {
-    char lexstr[4] = {};
+    char lexstr[PHI_LEN] = {};
     sscanf (str, "%[^)^$+-*/]", lexstr);
     if (strcmp (lexstr, "phi") == 0)
         return 1;
@@ -390,7 +390,7 @@ int lexphi (const char* str)
 
 int lexnum_e (const char* str)
 {
-    char lexstr[2] = {};
+    char lexstr[NUM_E_LEN] = {};
     sscanf (str, "%[^)^$+-*/]", lexstr);
     if (strcmp (lexstr, "e") == 0)
         return 1;

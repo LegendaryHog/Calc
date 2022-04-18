@@ -5,6 +5,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define SIN_LEN 3
+#define COS_LEN 3
+#define SQRT_LEN 4
+#define CBRT_LEN 4
+#define LN_LEN 2
+#define PI_LEN 2
+#define PHI_LEN 3
+#define NUM_E_LEN 1
+
+
 enum OPER {
     ADD = '+',
     SUB = '-',
