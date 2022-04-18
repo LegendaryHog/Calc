@@ -5,6 +5,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define VARSNUM 16
+#define VARLEN 8
+#define SIN_LEN 3
+#define COS_LEN 3
+#define SQRT_LEN 4
+#define CBRT_LEN 4
+#define LN_LEN 2
+#define PI_LEN 2
+#define PHI_LEN 3
+#define NUM_E_LEN 1
+
 enum OPERAND {
     ADD = '+',
     SUB = '-',
@@ -38,16 +49,21 @@ enum CONSTANT {
     NUM_E,
 };
 
-/*struct VARIABLE {
+struct VARIABLE {
     size_t  index;
-    char[5] name;
-};*/
+    char name[VARLEN];
+};
+
+typedef struct VARS {
+    struct VARIABLE vars[VARSNUM];
+    size_t pos;
+} vararr;
 typedef struct lexem {
     enum TYPE type;
     union VALUE {
         enum OPERAND op;
         enum BRACE brac;
-        //enum CONSTANT con;
+        enum CONSTANT con;
         struct VARIABLE var;
         double num;
     } val;
