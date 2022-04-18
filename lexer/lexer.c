@@ -136,8 +136,8 @@ int lexarrFill (lex_arr* lexarr, const char* str)
         else if (str[p] >= '0' && str[p] <= '9')
         {
             lex_t lex = {};
-            lex.type = CONST;
-            sscanf (str + p, "%lf", &lex.val.coval);
+            lex.type = NUM;
+            sscanf (str + p, "%lf", &lex.val.num);
             p += SkipNumber (str + p);
             if (lexarrPush (lexarr, lex) == 1)
                 return 1;
@@ -154,7 +154,7 @@ int lexarrFill (lex_arr* lexarr, const char* str)
         else
         { 
             char lexstr[10] = {};
-            sscanf (str + p, "%[^+-*/^ \0$()]", lexstr);
+            sscanf (str + p, "%[^+-*/^ $()]", lexstr);
             if (strcmp (lexstr, "sin") == 0)
             {
                 lex_t lex = {};
@@ -191,7 +191,16 @@ int lexarrFill (lex_arr* lexarr, const char* str)
                 if (lexarrPush (lexarr, lex) == 1)
                     return 1;
             }
-            else if (strncmp (str + p, "pi", strlen ("pi")) == 0)
+            else if (strcmp (lexstr, "ln") == 0)
+            {
+                lex_t lex = {};
+                lex.type = OPERAND;
+                lex.val.op = LN;
+                p += strlen ("ln");
+                if (lexarrPush (lexarr, lex) == 1)
+                    return 1;
+            }
+            else if (strcmp (lexstr, "pi") == 0)
             {
                 lex_t lex = {};
                 lex.type = CONST;
@@ -200,7 +209,7 @@ int lexarrFill (lex_arr* lexarr, const char* str)
                 if (lexarrPush (lexarr, lex) == 1)
                     return 1;
             }
-            else if (strncmp (str + p, "phi", strlen ("phi")) == 0)
+            else if (strcmp (lexstr, "phi") == 0)
             {
                 lex_t lex = {};
                 lex.type = CONST;
@@ -209,7 +218,7 @@ int lexarrFill (lex_arr* lexarr, const char* str)
                 if (lexarrPush (lexarr, lex) == 1)
                     return 1;
             }
-            else if (strncmp (str + p, "e", strlen ("e")) == 0)
+            else if (strcmp (lexstr, "e") == 0)
             {
                 lex_t lex = {};
                 lex.type = CONST;
@@ -258,9 +267,13 @@ int lexarrDump (lex_arr* lexarr)
                 fprintf (file, "\ttype: brace\n");
                 fprintf (file, "\tbrace: %c\n", (char)lexarr->lexs[i].val.brac);
                 break;
+            case NUM:
+                fprintf (file, "\ttype: num\n");
+                fprintf (file, "\tconst: %lf\n", lexarr->lexs[i].val.num);
+                break;
             case CONST:
                 fprintf (file, "\ttype: const\n");
-                fprintf (file, "\tconst: %lf\n", lexarr->lexs[i].val.coval);
+                fprintf (file, "\tconst: %d\n", lexarr->lexs[i].val.con);
                 break;
         }
     }
@@ -282,6 +295,8 @@ int fprintelem (FILE* file, lex_t lexem)
                         return fprintf (file, "sqrt ");
                     case CBRT:
                         return fprintf (file, "cbrt ");
+                    case LN:
+                        return fprintf (file, "ln ");
                 }
                 break;
             case BRAC:
@@ -290,11 +305,22 @@ int fprintelem (FILE* file, lex_t lexem)
                 else
                     return fprintf (file, ") ");
             case CONST:
-                return fprintf (file, "%lg ", lexem.val.coval);
+                switch (lexem.val.con) {
+                    case PI:
+                        return fprintf (file, "pi ");
+                    case PHI:
+                        return fprintf (file, "phi ");
+                    case NUM_E:
+                        return fprintf (file, "e ");
+                }
+            case NUM:
+                return fprintf (file, "%lg ", lexem.val.num);
+            case END:
+                return 0;
             default:
                 fprintf (file, "ERROR\n");
                 return 0;
-        }
+    }
 }
 
 

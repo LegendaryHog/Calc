@@ -2,6 +2,10 @@
 
 size_t gdcounter1 = 0;
 
+const double _PI_    = 3.1415926535;
+const double _NUM_E_ = 2.7182818284;
+const double _PHI_   = 1.618;
+
 const lex_t NULLSTRUCT = {};
 
 double CalcTree (Node* tree)
@@ -11,32 +15,40 @@ double CalcTree (Node* tree)
         fprintf (stderr, "FATAL ERROR: tree NULL pointer\n");
         return NAN;
     }
-    if (tree->data.type == CONST)
-    {
-        return tree->data.val.coval;
-    }
-    switch (tree->data.val.op) {
-        case ADD:
-            return CALC_L + CALC_R;
-        case SUB:
-            return CALC_L - CALC_R;
-        case MUL:
-            return CALC_L * CALC_R;
-        case DIV:
-            return CALC_L / CALC_R;
-        case DEG:
-            return pow (CALC_L, CALC_R);
-        case SIN:
-            return sin (CALC_L);
-        case COS:
-            return cos (CALC_L);
-        case SQRT:
-            return sqrt (CALC_L);
-        case CBRT:
-            return cbrt (CALC_L);
-        default:
-            fprintf  (stderr, "FATAL ERROR: UNKNOWN TYPE OF OPERAND: %d", tree->data.val.op);
-            return NAN;
+    if (isnum (tree->data))
+        return tree->data.val.num;
+    else if (ispi (tree->data))
+        return _PI_;
+    else if (isnum_e (tree->data))
+        return _NUM_E_;
+    else if (isphi (tree->data))
+        return _PHI_;
+    else {
+        switch (tree->data.val.op) {
+            case ADD:
+                return CALC_L + CALC_R;
+            case SUB:
+                return CALC_L - CALC_R;
+            case MUL:
+                return CALC_L * CALC_R;
+            case DIV:
+                return CALC_L / CALC_R;
+            case DEG:
+                return pow (CALC_L, CALC_R);
+            case SIN:
+                return sin (CALC_L);
+            case COS:
+                return cos (CALC_L);
+            case SQRT:
+                return sqrt (CALC_L);
+            case CBRT:
+                return cbrt (CALC_L);
+            case LN:
+                return log (CALC_L);
+            default:
+                fprintf  (stderr, "FATAL ERROR: UNKNOWN TYPE OF OPERAND: %d", tree->data.val.op);
+                return NAN;
+        }
     }
 }
 
@@ -157,7 +169,7 @@ Node* GetP (formula* f)
         f->p++;
         return val;
     }
-    else if (isconst (ACTLEX))
+    else if (isconst (ACTLEX) || isnum (ACTLEX))
     {
         return GetN (f);
     }
@@ -196,6 +208,15 @@ Node* GetP (formula* f)
             tree->left = GetP (f);
             return tree;
         }
+        if (isln (ACTLEX))
+        {
+            f->p++;
+            tree->data.type = OPERAND;
+            tree->data.val.op = LN;
+            tree->left = GetP (f);
+            return tree;
+        }
+        fprintf (stderr, "SYNTAX ERROR FROM GetP ()\n");
         return SyntaxError (f);
     }
 }
@@ -203,12 +224,21 @@ Node* GetP (formula* f)
 Node* GetN (formula* f)
 {
     Node* tree = PlantTree (NULLSTRUCT);
-    if (!isconst (ACTLEX))
+    if (!isnum (ACTLEX) && !isconst (ACTLEX))
     {
+        fprintf (stderr, "SYNTAXERROR FROM GetN ()\n");
         return SyntaxError (f);
     }
-    tree->data.type = CONST;
-    tree->data.val.coval = ACTLEX.val.coval;
+    if (isconst (ACTLEX))
+    {
+        tree->data.type = CONST;
+        tree->data.val.con = ACTLEX.val.con;
+    }
+    else
+    {
+        tree->data.type = NUM;
+        tree->data.val.num = ACTLEX.val.num;
+    }
     f->p++;
     return tree;
 }
@@ -216,7 +246,6 @@ Node* GetN (formula* f)
 Node* SyntaxError (formula* f)
 {
     fprintf (stderr, "SYNTAX ERROR\n");
-    fprintf (stderr, "lexem: %d %c\n", ACTLEX.type, ACTLEX.val.brac);
     int strpos = 0;
     int errstart = 0;
     int errend = 0;
@@ -388,6 +417,14 @@ int iscbrt (lex_t lexem)
         return 0;  
 }
 
+int isln (lex_t lexem)
+{
+    if (lexem.type == OPERAND && lexem.val.op == LN)
+        return 1;
+    else
+        return 0;  
+}
+
 int islbr (lex_t lexem)
 {
     if (lexem.type == BRAC && lexem.val.brac == LBRAC)
@@ -430,7 +467,14 @@ int isphi (lex_t lexem)
 
 int isnum_e (lex_t lexem)
 {
-    if (lexem.type == CONST && lexem.val.con == NUM_E;
+    if (lexem.type == CONST && lexem.val.con == NUM_E)
+        return 1;
+    else
+        return 0;
+}
+int isconst (lex_t lexem)
+{
+    if (lexem.type == CONST)
         return 1;
     else
         return 0;

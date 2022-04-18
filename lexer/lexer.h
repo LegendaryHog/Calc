@@ -15,6 +15,7 @@ enum OPER {
     COS = 'c',
     SQRT = 'S',
     CBRT = 'C',
+    LN = 'l',
 };
 
 enum BRACE {

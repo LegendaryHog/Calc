@@ -65,9 +65,19 @@ int issqrt (lex_t lexem);
 
 int iscbrt (lex_t lexem);
 
+int isln (lex_t lexem);
+
 int islbr (lex_t lexem);
 
 int isrbr (lex_t lexem);
+
+int isnum (lex_t lexem);
+
+int ispi (lex_t lexem);
+
+int isphi (lex_t lexem);
+
+int isnum_e (lex_t lexem);
 
 int isconst (lex_t lexem);
 

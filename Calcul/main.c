@@ -21,5 +21,6 @@ int main (void)
     lexarrDtor (f->lexarr);
     free (f->str);
     free (f);
+    ChopDown (res);
     return 0;
 }
