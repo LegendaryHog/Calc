@@ -73,7 +73,7 @@ int lexarrFill (lex_arr* lexarr, const char* str)
         if (str[p] == '+')
         {
             lex_t lex = {};
-            lex.type = OPERAND;
+            lex.type = OPER;
             lex.val.op = ADD;
             p++;
             if (lexarrPush (lexarr, lex) == 1)
@@ -82,7 +82,7 @@ int lexarrFill (lex_arr* lexarr, const char* str)
         else if (str[p] == '-')
         {
             lex_t lex = {};
-            lex.type = OPERAND;
+            lex.type = OPER;
             lex.val.op = SUB;
             p++;
             if (lexarrPush (lexarr, lex) == 1)
@@ -91,7 +91,7 @@ int lexarrFill (lex_arr* lexarr, const char* str)
         else if (str[p] == '*')
         {
             lex_t lex = {};
-            lex.type = OPERAND;
+            lex.type = OPER;
             lex.val.op = MUL;
             p++;
             if (lexarrPush (lexarr, lex) == 1)
@@ -100,7 +100,7 @@ int lexarrFill (lex_arr* lexarr, const char* str)
         else if (str[p] == '/')
         {
             lex_t lex = {};
-            lex.type = OPERAND;
+            lex.type = OPER;
             lex.val.op = DIV;
             p++;
             if (lexarrPush (lexarr, lex) == 1)
@@ -109,7 +109,7 @@ int lexarrFill (lex_arr* lexarr, const char* str)
         else if (str[p] == '^')
         {
             lex_t lex = {};
-            lex.type = OPERAND;
+            lex.type = OPER;
             lex.val.op = DEG;
             p++;
             if (lexarrPush (lexarr, lex) == 1)
@@ -154,7 +154,7 @@ int lexarrFill (lex_arr* lexarr, const char* str)
         else if (lexsin (str + p))
         {
             lex_t lex = {};
-            lex.type = OPERAND;
+            lex.type = OPER;
             lex.val.op = SIN;
             p += strlen ("sin");
             if (lexarrPush (lexarr, lex) == 1)
@@ -163,7 +163,7 @@ int lexarrFill (lex_arr* lexarr, const char* str)
         else if (lexcos (str + p))
         {
             lex_t lex = {};
-            lex.type = OPERAND;
+            lex.type = OPER;
             lex.val.op = COS;
             p += strlen ("cos");
             if (lexarrPush (lexarr, lex) == 1)
@@ -172,7 +172,7 @@ int lexarrFill (lex_arr* lexarr, const char* str)
         else if (lexsqrt (str + p))
         {
             lex_t lex = {};
-            lex.type = OPERAND;
+            lex.type = OPER;
             lex.val.op = SQRT;
             p += strlen ("sqrt");
             if (lexarrPush (lexarr, lex) == 1)
@@ -181,7 +181,7 @@ int lexarrFill (lex_arr* lexarr, const char* str)
         else if (lexcbrt (str + p))
         {
             lex_t lex = {};
-            lex.type = OPERAND;
+            lex.type = OPER;
             lex.val.op = CBRT;
             p += strlen ("cbrt");
             if (lexarrPush (lexarr, lex) == 1)
@@ -190,7 +190,7 @@ int lexarrFill (lex_arr* lexarr, const char* str)
         else if (lexln (str + p))
         {
             lex_t lex = {};
-            lex.type = OPERAND;
+            lex.type = OPER;
             lex.val.op = LN;
             p += strlen ("ln");
             if (lexarrPush (lexarr, lex) == 1)
@@ -254,7 +254,7 @@ int lexarrDump (lex_arr* lexarr)
     {
         fprintf (file, "pos: %zd\n", i);
         switch (lexarr->lexs[i].type) {
-            case OPERAND:
+            case OPER:
                 fprintf (file, "\ttype: operand\n");
                 fprintf (file, "\toperand: %c\n", (char)lexarr->lexs[i].val.op);
                 break;
@@ -278,7 +278,7 @@ int lexarrDump (lex_arr* lexarr)
 int fprintelem (FILE* file, lex_t lexem)
 {
     switch (lexem.type) {
-            case OPERAND:
+            case OPER:
                 switch (lexem.val.op) {
                     case ADD: case SUB: case MUL: case DIV: case DEG:
                         return fprintf (file, "%c ", lexem.val.op);
@@ -391,7 +391,7 @@ int lexphi (const char* str)
 int lexnum_e (const char* str)
 {
     char lexstr[2] = {};
-    sscanf (str, "%[^)^$+-*/]", lexstr);
+    sscanf (str, "%[^ )^$+-*/]", lexstr);
     if (strcmp (lexstr, "e") == 0)
         return 1;
     else

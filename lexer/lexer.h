@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-enum OPER {
+enum OPERAND {
     ADD = '+',
     SUB = '-',
     MUL = '*',
@@ -24,11 +24,12 @@ enum BRACE {
 };
 
 enum TYPE {
-    OPERAND = 1,
+    OPER = 1,
     NUM,
     BRAC,
     CONST,
     END,
+    VAR,
 };
 
 enum CONSTANT {
@@ -36,12 +37,18 @@ enum CONSTANT {
     PHI,
     NUM_E,
 };
+
+/*struct VARIABLE {
+    size_t  index;
+    char[5] name;
+};*/
 typedef struct lexem {
     enum TYPE type;
     union VALUE {
-        enum OPER op;
+        enum OPERAND op;
         enum BRACE brac;
-        enum CONSTANT con;
+        //enum CONSTANT con;
+        struct VARIABLE var;
         double num;
     } val;
 } lex_t;

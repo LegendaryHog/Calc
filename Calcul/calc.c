@@ -4,7 +4,7 @@ size_t gdcounter1 = 0;
 
 const double _PI_    = 3.1415926535;
 const double _NUM_E_ = 2.7182818284;
-const double _PHI_   = 1.618;
+const double _PHI_   = 1.618033989;
 
 const lex_t NULLSTRUCT = {};
 
@@ -46,7 +46,7 @@ double CalcTree (Node* tree)
             case LN:
                 return log (CALC_L);
             default:
-                fprintf  (stderr, "FATAL ERROR: UNKNOWN TYPE OF OPERAND: %d", tree->data.val.op);
+                fprintf  (stderr, "FATAL ERROR: UNKNOWN TYPE OF OPER: %d", tree->data.val.op);
                 return NAN;
         }
     }
@@ -84,12 +84,12 @@ Node* GetE (formula* f)
         new->right = GetT (f);
         if (op == '+')
         {
-            new->data.type = OPERAND;
+            new->data.type = OPER;
             new->data.val.op = ADD;
         }
         else
         {
-            new->data.type = OPERAND;
+            new->data.type = OPER;
             new->data.val.op = SUB;
         }
         tree = new;
@@ -114,12 +114,12 @@ Node* GetT (formula* f)
 
         if (op == '*')
         {
-            new->data.type = OPERAND;
+            new->data.type = OPER;
             new->data.val.op = MUL;
         }
         else
         {
-            new->data.type = OPERAND;
+            new->data.type = OPER;
             new->data.val.op = DIV;
         }
         tree = new;
@@ -139,7 +139,7 @@ Node* GetP0 (formula* f)
     f->p++;
     tree->right = GetP0 (f);
     tree->left = val1;
-    tree->data.type = OPERAND;
+    tree->data.type = OPER;
     tree->data.val.op = DEG;
     return tree;
 }
@@ -179,7 +179,7 @@ Node* GetP (formula* f)
         if (issin (ACTLEX))
         { 
             f->p++;
-            tree->data.type = OPERAND;
+            tree->data.type = OPER;
             tree->data.val.op = SIN;
             tree->left = GetP (f);
             return tree;
@@ -187,7 +187,7 @@ Node* GetP (formula* f)
         if (iscos (ACTLEX))
         {
             f->p++;
-            tree->data.type = OPERAND;
+            tree->data.type = OPER;
             tree->data.val.op = COS;
             tree->left = GetP (f);
             return tree;
@@ -195,7 +195,7 @@ Node* GetP (formula* f)
         if (issqrt (ACTLEX))
         {
             f->p++;
-            tree->data.type = OPERAND;
+            tree->data.type = OPER;
             tree->data.val.op = SQRT;
             tree->left = GetP (f);
             return tree;
@@ -203,7 +203,7 @@ Node* GetP (formula* f)
         if (iscbrt (ACTLEX))
         {
             f->p++;
-            tree->data.type = OPERAND;
+            tree->data.type = OPER;
             tree->data.val.op = CBRT;
             tree->left = GetP (f);
             return tree;
@@ -211,7 +211,7 @@ Node* GetP (formula* f)
         if (isln (ACTLEX))
         {
             f->p++;
-            tree->data.type = OPERAND;
+            tree->data.type = OPER;
             tree->data.val.op = LN;
             tree->left = GetP (f);
             return tree;
@@ -347,7 +347,7 @@ int FormulaDump (Node* tree)
 
 int isadd (lex_t lexem)
 {
-    if (lexem.type == OPERAND && lexem.val.op == ADD)
+    if (lexem.type == OPER && lexem.val.op == ADD)
         return 1;
     else
         return 0;    
@@ -355,7 +355,7 @@ int isadd (lex_t lexem)
 
 int issub (lex_t lexem)
 {
-    if (lexem.type == OPERAND && lexem.val.op == SUB)
+    if (lexem.type == OPER && lexem.val.op == SUB)
         return 1;
     else
         return 0;  
@@ -363,7 +363,7 @@ int issub (lex_t lexem)
 
 int ismul (lex_t lexem)
 {
-    if (lexem.type == OPERAND && lexem.val.op == MUL)
+    if (lexem.type == OPER && lexem.val.op == MUL)
         return 1;
     else
         return 0;  
@@ -371,7 +371,7 @@ int ismul (lex_t lexem)
 
 int isdiv (lex_t lexem)
 {
-    if (lexem.type == OPERAND && lexem.val.op == DIV)
+    if (lexem.type == OPER && lexem.val.op == DIV)
         return 1;
     else
         return 0;  
@@ -379,7 +379,7 @@ int isdiv (lex_t lexem)
 
 int isdeg (lex_t lexem)
 {
-    if (lexem.type == OPERAND && lexem.val.op == DEG)
+    if (lexem.type == OPER && lexem.val.op == DEG)
         return 1;
     else
         return 0;  
@@ -387,7 +387,7 @@ int isdeg (lex_t lexem)
 
 int issin (lex_t lexem)
 {
-    if (lexem.type == OPERAND && lexem.val.op == SIN)
+    if (lexem.type == OPER && lexem.val.op == SIN)
         return 1;
     else
         return 0;  
@@ -395,7 +395,7 @@ int issin (lex_t lexem)
 
 int iscos (lex_t lexem)
 {
-    if (lexem.type == OPERAND && lexem.val.op == COS)
+    if (lexem.type == OPER && lexem.val.op == COS)
         return 1;
     else
         return 0;  
@@ -403,7 +403,7 @@ int iscos (lex_t lexem)
 
 int issqrt (lex_t lexem)
 {
-    if (lexem.type == OPERAND && lexem.val.op == SQRT)
+    if (lexem.type == OPER && lexem.val.op == SQRT)
         return 1;
     else
         return 0;  
@@ -411,7 +411,7 @@ int issqrt (lex_t lexem)
 
 int iscbrt (lex_t lexem)
 {
-    if (lexem.type == OPERAND && lexem.val.op == CBRT)
+    if (lexem.type == OPER && lexem.val.op == CBRT)
         return 1;
     else
         return 0;  
@@ -419,7 +419,7 @@ int iscbrt (lex_t lexem)
 
 int isln (lex_t lexem)
 {
-    if (lexem.type == OPERAND && lexem.val.op == LN)
+    if (lexem.type == OPER && lexem.val.op == LN)
         return 1;
     else
         return 0;  
