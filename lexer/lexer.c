@@ -60,7 +60,7 @@ size_t SkipNumber (const char* str)
 size_t SkipSpaces (const char* str)
 {
     size_t i = 0;
-    for (i = 0; str[i] == ' ' || str[i] == '\t'; i++) {;}
+    for (i = 0; str[i] == ' ' || str[i] == '\t' || str[i] == '\n' || str[i] == '\r'; i++) {;}
     return i;
 }
 
